@@ -1,0 +1,22 @@
+{
+  "name": "kerboodleRedesign",
+  "version": "0.0.0",
+  "homepage": "https://github.com/paulkennethkent/kerboodleRedesignSupport",
+  "authors": [
+    "Paul Kenneth Kent <paul@projectresponsive.com>"
+  ],
+  "description": "Redesign",
+  "main": "index.html",
+  "keywords": [
+    "bootstrap"
+  ],
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
