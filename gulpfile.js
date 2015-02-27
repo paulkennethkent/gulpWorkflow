@@ -7,6 +7,10 @@ var gulp = require('gulp'),
 	gulpif = require('gulp-if'),
 	uglify = require('gulp-uglify'),
 	minifyHTML = require('gulp-minify-html'),
+	haml = require('gulp-ruby-haml'),
+	fileinclude = require('gulp-file-include'),
+	prettify = require('gulp-prettify'),
+	markdown = require('gulp-markdown'),
 	connect = require('gulp-connect');
 
 
@@ -29,10 +33,10 @@ htmlSources = [outputDir + '*.html'];
 env = process.env.NODE_ENV || 'development';
 
 if (env ==='development') {
-	outputDir = 'builds/development/';
+	outputDir = './builds/development/';
 	sassStyle = 'expanded'
 } else {
-	outputDir = 'builds/production/';
+	outputDir = './builds/production/';
 	sassStyle = 'compressed'
 }; 
 
@@ -57,11 +61,20 @@ gulp.task('js', function() {
 });
 
 
+// HAML 
+gulp.task('haml', function() {
+  gulp.src('./components/haml/*.haml', {read: false})
+       .pipe(haml())
+       .pipe(gulp.dest('./builds/development/'))
+       .pipe(connect.reload());
+});
+
+
 //SASS and Compass 
 gulp.task('compass', function() {
 	gulp.src(sassSources)
 	.pipe(compass({
-		sass: 'components/sass',
+		sass: './components/sass',
 		image: outputDir + '/img',
 		style: sassStyle
 	}))
@@ -84,6 +97,8 @@ gulp.task('watch', function() {
 	gulp.watch('components/sass/*.scss', ['compass']);
 	gulp.watch(jsSources, ['js']);
 	gulp.watch('builds/development/*.html', ['html']);
+	gulp.watch('components/html/**/*.html', ['fileinclude']);
+	gulp.watch('components/haml/*.haml', ['haml']);
 });
 
 //Live reload and web sever
@@ -94,6 +109,18 @@ gulp.task('connect', function() {
 	});
 });
 
+//File Include 
+gulp.task('fileinclude', function() {
+  gulp.src(['./components/html/*.html'])
+    .pipe(fileinclude({
+      prefix: '@@',
+      basepath: '@file'
+    }))
+    .pipe(prettify({indent_size: 2}))
+    .pipe(gulp.dest('./builds/development/'))
+    .pipe(connect.reload());
+});
+
 
 //default GULP task
-gulp.task('default', ['log', 'html', 'js', 'compass', 'connect', 'watch']);
+gulp.task('default', ['log', 'fileinclude', 'haml', 'html', 'js', 'compass', 'connect', 'watch']);
